@@ -1,0 +1,64 @@
+def jacocoPath = '../../tools/jacoco'
+
+pipeline {
+   agent any
+
+   tools {
+      maven "maven-3.6.2"
+   }
+
+   stages {
+      stage('clean & pull') {
+         steps {
+            // Get some code from a GitHub repository
+            bat 'mvn clean'
+            bat 'git clean -fdx'
+            git 'git@gitlab.doubleslash.de:lcapellino/gitlab_ci_test.git'
+           }
+         }
+      stage('SonarQube'){
+         steps{
+            bat "echo 'Starting SonarQube...'"
+         }
+      }
+      stage('dependency-check'){
+         steps{
+             
+            bat "echo 'starting dependency-check...'"
+           /* bat "mvn dependency-check:aggregate -Dformat=xml"
+            //dependencyCheck additionalArguments: '--failOnCVSS 5', odcInstallation: '5.2.4'
+            dependencyCheckPublisher pattern: ''
+            */
+         }
+      }
+      stage('Coverage'){
+         steps{
+             /*
+            bat "if not exist \"${jacocoPath}\" mkdir \"${jacocoPath}\""
+            bat "curl \"https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.jacoco&a=jacoco&e=zip&v=LATEST\" -L -o ${jacocoPath}/jacoco.zip"
+            bat "tar -xf ${jacocoPath}/jacoco.zip -C ${jacocoPath}" 
+            
+            bat "mvn org.apache.maven.plugins:maven-resources-plugin:resources"
+            bat "mvn org.apache.maven.plugins:maven-compiler-plugin:compile"
+            bat "mvn org.apache.maven.plugins:maven-resources-plugin:testResources"
+            bat "mvn org.apache.maven.plugins:maven-compiler-plugin:testCompile"
+            bat "mvn org.apache.maven.plugins:maven-surefire-plugin:test -DargLine=\"-javaagent:'%cd%\\..\\..\\tools\\jacoco\\lib\\jacocoagent.jar'=destfile=target\\jacoco.exec -Xmx128m\""
+             */
+            //bat "mvn test"
+            jacoco(
+               changeBuildStatus: true,
+               minimumLineCoverage: '70',
+               maximumLineCoverage: '80'
+            )
+         }
+      }
+      stage('cleanup'){
+         steps{
+             bat "echo 'starting cleanup...'"
+             /*
+             bat "rd \"${jacocoPath}\" /S /Q"
+             */
+         }
+      }
+   }
+}
