@@ -13,6 +13,11 @@ pipeline {
             	cleanCheckout("${gitRepo}" ,"${gitCredential}")
         	}
     	}
+		stage('Compile') {
+         	steps {
+            	bat 'mvn compile'
+        	}
+    	}
 		/*
     	stage('Check Dependencies') {
          	steps {
