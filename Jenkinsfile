@@ -13,6 +13,7 @@ pipeline {
             	cleanCheckout("${gitRepo}" ,"${gitCredential}")
         	}
     	}
+		/*
     	stage('Check Dependencies') {
          	steps {
             	dependencyTrack "${dependencyTrackProjectID}" 
@@ -22,6 +23,6 @@ pipeline {
          	steps {
             	jUnitTests "${projectID}" 
         	}
-    	}
+    	}*/
 	}
 }
